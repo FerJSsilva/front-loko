@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../context/CompanyContext';
 
@@ -7,10 +7,13 @@ export default function Contracts() {
   const { companyData } = useCompany();
   const [selectedContract, setSelectedContract] = useState(null);
 
-  if (!companyData) {
-    navigate('/');
-    return null;
-  }
+  useEffect(() => {
+    if (!companyData) {
+      navigate('/');
+    }
+  }, [companyData, navigate]);
+
+  if (!companyData) return null;
 
   const handleNext = () => {
     if (!selectedContract) {
@@ -18,6 +21,12 @@ export default function Contracts() {
       return;
     }
     navigate('/invoice');
+  };
+
+  const handleDetails = (e, contractId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/contracts/${contractId}`);
   };
 
   return (
@@ -52,9 +61,7 @@ export default function Contracts() {
               </p>
             </div>
             <button
-              onClick={() => {
-                /* TODO: Show contract details modal */
-              }}
+              onClick={(e) => handleDetails(e, contract.id)}
               className="rounded bg-gray-100 px-3 py-1 text-sm hover:bg-gray-200"
             >
               Details
